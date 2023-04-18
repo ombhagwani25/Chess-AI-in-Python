@@ -186,9 +186,21 @@ def selectmove(depth):
 # Speak Function for the Assistant to speak
 def speak(text):
     engine = pyttsx3.init('sapi5')
-    voices = engine.getProperty('voices')
-    engine.setProperty('voice', voices[1].id)  # Set index for voices currently 3 voices available
-    engine.say(text)
+    # voices = engine.getProperty('voices')
+    # engine.setProperty('voice', voices[1].id)  # Set index for voices currently 3 voices available
+    rate = engine.getProperty('rate')
+    engine.setProperty('rate', 150)
+    # engine.say(text)
+    # engine.runAndWait()
+    if isinstance(text, str): # if text is a string, run this code
+        engine.say(text)
+    elif isinstance(text, list) or isinstance(text, tuple): # if text is a list or tuple, run this code
+        for t in text:
+            engine.say(t)
+    else:
+        print("Invalid input. Please provide a string or a list/tuple of strings.")
+        return
+
     engine.runAndWait()
 
 
@@ -199,31 +211,7 @@ def devmove():
     board.push(move)
 
 
-# Searching Deuterium's Move
-def deuterium():
-    engine = chess.engine.SimpleEngine.popen_uci(
-        "C:/Users/your_path/engines/Deuterium.exe")
-    move = engine.play(board, chess.engine.Limit(time=0.1))
-    speak(move.move)
-    board.push(move.move)
 
-
-# Searching CDrill's Move
-def cdrill():
-    engine = chess.engine.SimpleEngine.popen_uci(
-        "C:/Users/your_path/engines/CDrill.exe")
-    move = engine.play(board, chess.engine.Limit(time=0.1))
-    speak(move.move)
-    board.push(move.move)
-
-
-# Searching Stockfish's Move
-def stockfish():
-    engine = chess.engine.SimpleEngine.popen_uci(
-        "C:/Users/your_path/engines/stockfish.exe")
-    move = engine.play(board, chess.engine.Limit(time=0.1))
-    speak(move.move)
-    board.push(move.move)
 
 
 app = Flask(__name__)
@@ -231,8 +219,12 @@ app = Flask(__name__)
 
 # Introduction lines
 def lines():
-    speak(
-        "Hello, my name is number 0613010517,. that's right it is the name my creator gave to me. I will be guiding you through out your experience through this game. So without wasting any time Welcome to the Chess World. Enjoy your game. Hope you have fun.")
+    speak([
+        "Hello, my name is Chess GPT...",
+         "that's right it is the name my creator gave to me...",
+         "I will be guiding you through out your experience through this game. So without wasting any time Welcome to the Chess World.",
+         "Enjoy your game. Hope you have fun."])
+   
 
 
 # Front Page of the Flask Web Page
@@ -250,8 +242,8 @@ def main():
     ret += '<form action="/undo/" method="post"><button name="Undo" type="submit">Undo Last Move</button></form>'
     ret += '<form action="/move/"><input type="submit" value="Make Human Move:"><input name="move" type="text"></input></form>'
     ret += '<form action="/recv/" method="post"><button name="Receive Move" type="submit">Receive Human Move</button></form>'
-    ret += '<form action="/dev/" method="post"><button name="Comp Move" type="submit">Make Dev-Zero Move</button></form>'
-    ret += '<form action="/engine/" method="post"><button name="Stockfish Move" type="submit">Make Stockfish Move</button></form>'
+    ret += '<form action="/dev/" method="post"><button name="Comp Move" type="submit">Run AI Move</button></form>'
+    # ret += '<form action="/engine/" method="post"><button name="Stockfish Move" type="submit">Make Stockfish Move</button></form>'
     ret += '<form action="/inst/" method="post"><button name="Instructions" type="submit">Instructions</button></form>'
     ret += '<form action="/cred/" method="post"><button name="Credits" type="submit">Credits</button></form>'
     if board.is_stalemate():
@@ -283,7 +275,7 @@ def move():
     return main()
 
 
-# Recieve Human Move
+# Receive Human Move
 @app.route("/recv/", methods=['POST'])
 def recv():
     try:
@@ -339,8 +331,10 @@ def undo():
 # Credits
 @app.route("/cred/", methods=['POST'])
 def cred():
-    speak(
-        "This game was developed by Master Ansh Yogesh Gaikwad, a F.Y. student studying in Vishwakarma Institute of Technology and his Team before the quarantine of the year 2020. He would like to thank his mentor Neelam Upasni Maam and his group members Arshad Patel, Prashanth Bijamwar, Sarvesh Patil and Nisha Modani. He quotes 'Thank you, it wasn't possible without you guys.'")
+    text_array = [    "This game was developed by Master Tanmay Warokar, Master Sajeed Kannoje, and Master Om Bhagwani.",    
+    "F.Y. students studying in Shri Ramdeobaba College of Engineering and Management.",    
+    "We quote, 'Thank you... it wasn't possible without you guys.'"]
+    speak(text_array)
     return main()
 
 
